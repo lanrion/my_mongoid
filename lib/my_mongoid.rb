@@ -25,13 +25,19 @@ module MyMongoid
     def initialize(attrs = {})
       raise ArgumentError if !attrs.is_a?(Hash)
 
-      @attributes = attrs
+      @attributes = {}
 
-      # Refactor
-      attrs.each_pair do |attr_name, attr_value|
-        send("#{attr_name}=", attr_value)
+      process_attributes(attrs)
+    end
+
+    def process_attributes(attrs)
+      attrs.each_pair do |name,value|
+        raise MyMongoid::UnknownAttributeError if !self.respond_to?(name)
+        send("#{name}=",value)
       end
     end
+
+    alias_method :attributes=, :process_attributes
 
     def read_attribute(attr_name)
       @attributes.fetch(attr_name)
