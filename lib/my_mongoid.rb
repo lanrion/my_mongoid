@@ -70,6 +70,14 @@ module MyMongoid
         define_method("#{name}=") do |value|
           write_attribute(name,value)
         end
+
+        if alias_name = options[:as]
+          alias_name = alias_name.to_s
+          self.module_eval do
+            alias_method alias_name, name
+            alias_method "#{alias_name}=", "#{name}="
+          end
+        end
       end
 
       def fields
