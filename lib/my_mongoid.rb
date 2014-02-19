@@ -1,4 +1,7 @@
 require "my_mongoid/version"
+require "active_support/core_ext"
+require "active_model"
+
 require 'pry-rails'
 
 module MyMongoid
@@ -6,20 +9,28 @@ module MyMongoid
   attr_accessor :models
 
   module Document
+    extend ActiveSupport::Concern
+
     attr_accessor :attributes
 
     def self.included(klass)
-      MyMongoid.models = klass
+
+      klass.module_eval do
+        extend ClassMethods
+        field :_id, :as => :id
+        MyMongoid.models = klass
+      end
     end
 
     def initialize(attrs = {})
       raise ArgumentError if !attrs.is_a?(Hash)
 
-      attrs.each_pair do |attr_name, attr_value|
-        define_singleton_method(attr_name){attr_value}
-      end
-
       @attributes = attrs
+
+      # Refactor
+      attrs.each_pair do |attr_name, attr_value|
+        send("#{attr_name}=", attr_value)
+      end
     end
 
     def read_attribute(attr_name)
@@ -36,11 +47,33 @@ module MyMongoid
 
     module ClassMethods
 
+      def is_mongoid_model?
+        true
+      end
+
+      def field(name, options={})
+        name = name.to_s
+        @fields ||= {}
+        raise MyMongoid::DuplicateFieldError if @fields.has_key?(name)
+        @fields[name] = MyMongoid::Field.new(name,options)
+
+        define_method(name) do
+          read_attribute(name)
+        end
+
+        define_method("#{name}=") do |value|
+          write_attribute(name,value)
+        end
+      end
+
+      def fields
+        @fields
+      end
     end
   end
 
   def self.models=(model)
-    @models ||= Array.new
+    @models ||= []
     @models << model
   end
 
@@ -48,4 +81,18 @@ module MyMongoid
     @models
   end
 
+  class Field
+    attr_reader :name, :options
+    def initialize(name,options)
+      @name = name
+      @options = options
+    end
+  end
+
+end
+
+class MyMongoid::DuplicateFieldError < RuntimeError
+end
+
+class MyMongoid::UnknownAttributeError < RuntimeError
 end
