@@ -1,6 +1,4 @@
-# MyMongoid
-
-![[Build Status]](https://travis-ci.org/lanrion/my_mongoid)
+# MyMongoid [![Build Status](https://secure.travis-ci.org/lanrion/my_mongoid.png?branch=master)](http://travis-ci.org/lanrion/my_mongoid)
 
 TODO: Write a gem description
 
