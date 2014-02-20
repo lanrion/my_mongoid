@@ -1,5 +1,7 @@
 # MyMongoid
 
+![[Build Status]](https://travis-ci.org/lanrion/my_mongoid)
+
 TODO: Write a gem description
 
 ## Installation
