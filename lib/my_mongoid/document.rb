@@ -57,7 +57,7 @@ module MyMongoid
     end
 
     def write_attribute(attr_name, new_attr_value)
-      validate_value_type(attr_name, attr_value)
+      validate_value_type(attr_name, new_attr_value)
       @attributes[attr_name]= new_attr_value
     end
 
