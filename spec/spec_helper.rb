@@ -16,6 +16,17 @@
 
 require "./lib/my_mongoid"
 
+if ENV["CI"]
+  require "coveralls"
+  Coveralls.wear! do
+    add_filter "spec"
+  end
+end
+
+class Event
+  include MyMongoid::Document
+end
+
 RSpec.configure do |config|
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
