@@ -26,25 +26,37 @@ module MyMongoid
       raise ArgumentError if !attrs.is_a?(Hash)
       @attributes = {}
       process_attributes(attrs)
-      set_default_attributes(attrs)
+      process_default_value(attrs)
     end
 
     def process_attributes(attrs)
       attrs.each_pair do |name, value|
         raise MyMongoid::UnknownAttributeError if !self.respond_to?(name)
-        send("#{name}=",value)
+        validate_value_type(name, value)
+        send("#{name}=", value)
       end
     end
     alias_method :attributes=, :process_attributes
 
-    def set_default_attributes(known_attrs)
+    def process_default_value(known_attrs)
       fields = self.class.fields
       uninit_attr_keys = fields.keys - known_attrs.keys
       uninit_fields    = uninit_attr_keys.collect{|attr_key| fields[attr_key]}
 
       uninit_fields.each do |field|
+        validate_value_type(field.name, field.options[:default])
         send("#{field.name}=", field.options[:default]) if !field.options[:default].nil?
       end
+    end
+
+    def validate_value_type(attr_name, attr_value)
+      fields = self.class.fields
+      field  = fields[attr_name.to_s]
+      define_type = field.options[:type]
+      return true if define_type.nil?
+      attr_value_type = attr_value.class
+      raise MyMongoid::MismatcheTypeError if attr_value_type != define_type
+      true
     end
 
     def read_attribute(attr_name)
@@ -110,6 +122,13 @@ module MyMongoid
       @name = name
       @options = options
     end
+
+    # def method_missing(name, opts={})
+    #   define_method(name) do
+    #     @options[name.to_sym]
+    #   end
+    #   super
+    # end
   end
 
 end
@@ -118,4 +137,7 @@ class MyMongoid::DuplicateFieldError < RuntimeError
 end
 
 class MyMongoid::UnknownAttributeError < RuntimeError
+end
+
+class MyMongoid::MismatcheTypeError < RuntimeError
 end
