@@ -5,5 +5,17 @@ module MyMongoid
       @name = name
       @options = options
     end
+
+    def method_missing(name, opts = {})
+      value = @options[name.to_sym]
+      if value.nil?
+        super
+      else
+        self.class_eval do
+          define_method(name){value}
+        end
+        @options[name.to_sym]
+      end
+    end
   end
 end
