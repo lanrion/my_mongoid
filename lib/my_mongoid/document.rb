@@ -8,7 +8,7 @@ module MyMongoid
     included do |klass|
       klass.module_eval do
         extend ClassMethods
-        field :_id, :as => :id, :default => rand()
+        field :_id, :as => :id
         MyMongoid.models = klass
       end
     end
@@ -57,6 +57,7 @@ module MyMongoid
     end
 
     def write_attribute(attr_name, new_attr_value)
+      validate_value_type(attr_name, attr_value)
       @attributes[attr_name]= new_attr_value
     end
 
