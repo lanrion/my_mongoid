@@ -17,27 +17,35 @@ module MyMongoid
 
       klass.module_eval do
         extend ClassMethods
-        field :_id, :as => :id
+        field :_id, :as => :id, :default => rand()
         MyMongoid.models = klass
       end
     end
 
     def initialize(attrs = {})
       raise ArgumentError if !attrs.is_a?(Hash)
-
       @attributes = {}
-
       process_attributes(attrs)
+      set_default_attributes(attrs)
     end
 
     def process_attributes(attrs)
-      attrs.each_pair do |name,value|
+      attrs.each_pair do |name, value|
         raise MyMongoid::UnknownAttributeError if !self.respond_to?(name)
         send("#{name}=",value)
       end
     end
-
     alias_method :attributes=, :process_attributes
+
+    def set_default_attributes(known_attrs)
+      fields = self.class.fields
+      uninit_attr_keys = fields.keys - known_attrs.keys
+      uninit_fields    = uninit_attr_keys.collect{|attr_key| fields[attr_key]}
+
+      uninit_fields.each do |field|
+        send("#{field.name}=", field.options[:default]) if !field.options[:default].nil?
+      end
+    end
 
     def read_attribute(attr_name)
       @attributes.fetch(attr_name)
@@ -68,7 +76,7 @@ module MyMongoid
         end
 
         define_method("#{name}=") do |value|
-          write_attribute(name,value)
+          write_attribute(name, value)
         end
 
         if alias_name = options[:as]
@@ -78,6 +86,7 @@ module MyMongoid
             alias_method "#{alias_name}=", "#{name}="
           end
         end
+
       end
 
       def fields
