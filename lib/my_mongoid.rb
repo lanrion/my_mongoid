@@ -27,6 +27,7 @@ module MyMongoid
       @attributes = {}
       process_attributes(attrs)
       process_default_value(attrs)
+      yield self if block_given?
     end
 
     def process_attributes(attrs)
