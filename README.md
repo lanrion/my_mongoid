@@ -1,4 +1,4 @@
-# MyMongoid [![Build Status](https://secure.travis-ci.org/lanrion/my_mongoid.png?branch=master)](http://travis-ci.org/lanrion/my_mongoid)[![Coverage Status](https://coveralls.io/repos/lanrion/my_mongoid/badge.png?branch=master)](https://coveralls.io/r/lanrion/my_mongoid?branch=master)
+# MyMongoid [![Build Status](https://secure.travis-ci.org/lanrion/my_mongoid.png?branch=master)](http://travis-ci.org/lanrion/my_mongoid)  [![Coverage Status](https://coveralls.io/repos/lanrion/my_mongoid/badge.png?branch=master)](https://coveralls.io/r/lanrion/my_mongoid?branch=master)
 
 TODO: Write a gem description
 
