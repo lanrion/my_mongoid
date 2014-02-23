@@ -2,13 +2,19 @@ module MyMongoid
 
   module Document
     extend ActiveSupport::Concern
+    include Sessions
+    include Persistable::Creatable
+    include Persistable::Deletable
 
     attr_accessor :attributes
 
     included do |klass|
       klass.module_eval do
         extend ClassMethods
-        field :_id, :as => :id
+        field(:_id,
+              :as => :id,
+              :default => BSON::ObjectId.new,
+              :type => BSON::ObjectId )
         MyMongoid.models = klass
       end
     end
@@ -53,7 +59,7 @@ module MyMongoid
     end
 
     def read_attribute(attr_name)
-      @attributes.fetch(attr_name)
+      @attributes[attr_name].to_s
     end
 
     def write_attribute(attr_name, new_attr_value)
@@ -98,6 +104,15 @@ module MyMongoid
       def fields
         @fields
       end
+
+      def collection_name
+        self.to_s.tableize
+      end
+
+      # def convert_id(klass, id)
+      #   BSON::ObjectId.mongoize(id)
+      # end
+
     end
   end
 
