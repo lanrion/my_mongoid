@@ -1,8 +1,9 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 # Add in Gemfile
 group :test do
   gem "pry-rails"
+  gem "pry-debugger", "~> 0.2.2"
 
   gem "rspec", "~> 3.0.0.beta1"
 
