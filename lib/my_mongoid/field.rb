@@ -14,7 +14,7 @@ module MyMongoid
         self.class_eval do
           define_method(name){value}
         end
-        @options[name.to_sym]
+        value
       end
     end
   end

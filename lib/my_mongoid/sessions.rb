@@ -12,15 +12,21 @@ module MyMongoid
     end
 
     def collection
-      mongo_session[collection_name]
-    end
-
-    def mongo_session
-      Sessions.default
+      self.class.mongo_session[collection_name]
     end
 
     def collection_name
       self.class.collection_name
+    end
+
+    module ClassMethods
+      def mongo_session
+        @session_default ||= Sessions.default
+      end
+
+      def collection
+        mongo_session[collection_name]
+      end
     end
 
     private

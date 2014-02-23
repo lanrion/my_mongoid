@@ -9,12 +9,16 @@ module MyMongoid
       def insert(attrs={}, options={})
         new_attrs = attrs.blank? ? attributes : attrs
         collection.insert(new_attrs)
+        @new_record = false
       end
       alias_method :save, :insert
 
-      def create(attrs={}, &block)
-        new_attributes = attributes.merge(attrs)
-        insert(new_attributes)
+      module ClassMethods
+        def create(attrs={}, &block)
+          doc = new(attrs)
+          doc.save
+          doc
+        end
       end
 
     end

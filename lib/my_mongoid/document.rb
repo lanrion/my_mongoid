@@ -5,6 +5,7 @@ module MyMongoid
     include Sessions
     include Persistable::Creatable
     include Persistable::Deletable
+    include Queryable::Finder
 
     attr_accessor :attributes
 
@@ -12,15 +13,16 @@ module MyMongoid
       klass.module_eval do
         extend ClassMethods
         field(:_id,
-              :as => :id,
-              :default => BSON::ObjectId.new,
-              :type => BSON::ObjectId )
+              :as      => :id,
+              :default => ->{ BSON::ObjectId.new },
+              :type    => BSON::ObjectId )
         MyMongoid.models = klass
       end
     end
 
     def initialize(attrs = {})
       raise ArgumentError if !attrs.is_a?(Hash)
+      @new_record = true
       @attributes = {}
       process_attributes(attrs)
       process_default_value(attrs)
@@ -44,16 +46,22 @@ module MyMongoid
 
       uninit_fields.each do |field|
         validate_value_type(field.name, field.options[:default])
-        send("#{field.name}=", field.options[:default]) if !field.options[:default].nil?
+        default_opt = field.options[:default]
+        default_value = default_opt.respond_to?(:call) ? default_opt.call : default_opt
+        send("#{field.name}=", default_value) if default_opt.present?
       end
     end
 
     def validate_value_type(attr_name, attr_value)
+      return true if attr_value.blank?
       fields = self.class.fields
       field  = fields[attr_name.to_s]
       define_type = field.options[:type]
-      return true if define_type.nil?
+      return true if define_type.blank?
       attr_value_type = attr_value.class
+      if attr_value_type == Proc
+        attr_value_type = attr_value.call.class
+      end
       raise MyMongoid::MismatcheTypeError if attr_value_type != define_type
       true
     end
@@ -68,7 +76,11 @@ module MyMongoid
     end
 
     def new_record?
-      true
+      @new_record ||= false
+    end
+
+    def bson_id
+      BSON::ObjectId.mongoize(id)
     end
 
     module ClassMethods
@@ -109,9 +121,9 @@ module MyMongoid
         self.to_s.tableize
       end
 
-      # def convert_id(klass, id)
-      #   BSON::ObjectId.mongoize(id)
-      # end
+      def documents
+        collection.find
+      end
 
     end
   end
