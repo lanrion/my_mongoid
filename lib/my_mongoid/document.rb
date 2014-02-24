@@ -46,7 +46,7 @@ module MyMongoid
 
       uninit_fields.each do |field|
         validate_value_type(field.name, field.options[:default])
-        default_opt = field.options[:default]
+        default_opt   = field.options[:default]
         default_value = default_opt.respond_to?(:call) ? default_opt.call : default_opt
         send("#{field.name}=", default_value) if default_opt.present?
       end
@@ -72,7 +72,7 @@ module MyMongoid
 
     def write_attribute(attr_name, new_attr_value)
       validate_value_type(attr_name, new_attr_value)
-      @attributes[attr_name]= new_attr_value
+      @attributes[attr_name] = new_attr_value
     end
 
     def new_record?

@@ -7,13 +7,15 @@ module MyMongoid
       extend ActiveSupport::Concern
 
       module ClassMethods
+
         def count
           documents.count
         end
+
         alias_method :size, :count
 
         def find_by(attrs = {})
-          self.new(collection.find(attrs).first.to_h)
+          new(collection.find(attrs).first.to_h)
         end
 
       end
