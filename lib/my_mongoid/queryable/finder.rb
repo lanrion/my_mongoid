@@ -15,7 +15,7 @@ module MyMongoid
         alias_method :size, :count
 
         def find_by(attrs = {})
-          new(collection.find(attrs).first.to_h)
+          new(collection.find(attrs).first.try(:to_hash))
         end
 
       end

@@ -50,16 +50,16 @@ describe "MyMongoid::Creatable" do
   end
 
   # TODO: replace self, not using moped directly
-  it "update" do
-    event_1 = Event.new(:age => "27")
-    expect(event.new_record?).to eq true
-    event_1.save
-    expect(event_1.new_record?).to eq false
+  # it "update" do
+  #   event_1 = Event.new(:age => "27")
+  #   expect(event.new_record?).to eq true
+  #   event_1.save
+  #   expect(event_1.new_record?).to eq false
 
-    event_2 = Event.find_by("id" => event_1.id)
-    event_2.age = "20"
-    event_2.save
-    expect(event.age).not_to eq "27"
+  #   event_2 = Event.find_by("id" => event_1.id)
+  #   event_2.age = "20"
+  #   event_2.save
+  #   expect(event.age).not_to eq "27"
 
-  end
+  # end
 end
