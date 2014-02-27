@@ -13,6 +13,7 @@ require "my_mongoid/persistable/deletable"
 require "my_mongoid/queryable/finder"
 require "my_mongoid/field"
 require "my_mongoid/document"
+require "my_mongoid/configuration"
 
 require "pry-rails"
 
@@ -27,6 +28,14 @@ module MyMongoid
 
   def self.models
     @models
+  end
+
+  def self.configuration
+    MyMongoid::Configuration.instance
+  end
+
+  def self.configure
+    yield(configuration) if block_given?
   end
 
 end

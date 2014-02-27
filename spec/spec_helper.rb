@@ -15,6 +15,8 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require "./lib/my_mongoid"
+require "pry-rails"
+require "pry-debugger"
 
 if ENV["CI"]
   require "coveralls"
